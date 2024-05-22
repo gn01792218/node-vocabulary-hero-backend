@@ -1,19 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import express from 'express'
+import route from './routes'
 
-const prisma = new PrismaClient()
+const app = express()
+const port = 1222
+app.use(express.json()) //讓express可以解析request.body
 
-async function main() {
-  // ... you will write your Prisma Client queries here
-  const allUsers = await prisma.user.findMany()
-  console.log('使用者清單',allUsers)
-}
+app.use(route)
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+app.get('/',(req,res)=>{
+    res.send('<h1>Hellow Word</h1>')
+})
+app.listen(port,()=>{
+    console.log('server running at 1222')
+})
