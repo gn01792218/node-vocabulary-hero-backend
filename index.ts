@@ -1,5 +1,8 @@
 import express from 'express'
+import dotenv from 'dotenv'
 import route from './routes'
+
+dotenv.config()
 
 const app = express()
 const port = 1222
