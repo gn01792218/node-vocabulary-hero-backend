@@ -1,8 +1,8 @@
-import { User } from "./user"
+import { UserModel } from "./user"
 declare global {
   namespace Express {
     export interface Request {
-      user?: User;
+      user?: UserModel;
     }
   }
 }
