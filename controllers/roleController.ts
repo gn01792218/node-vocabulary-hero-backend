@@ -1,7 +1,7 @@
 import { Role } from '@prisma/client'
 import RoleRepository from '../repositories/roleRepository'
 import { Request, Response } from 'express'
-import { RoleCreateRequest, RoleUpdateRequest } from '../types/role'
+import { RoleCreateRequest, RoleEnum, RoleUpdateRequest } from '../types/role'
 import { ErrorRespons } from '../types/error'
 const repo = new RoleRepository()
 
@@ -38,6 +38,13 @@ export const deleteRole = async (req:Request,res:Response<Role | ErrorRespons>)=
     const user = await repo.delete(Number(id))
     console.log(user)
     res.status(200).json(user)
+}
+
+export const checkRolesAllExist = async (rolesEnum:RoleEnum[])=>{
+    const roles = await repo.getAll()
+    return rolesEnum.every(roleEnum=>{
+        return roles.some(role=>role.name === roleEnum)
+    })
 }
 
 async function isRoleNameExist(name:string){

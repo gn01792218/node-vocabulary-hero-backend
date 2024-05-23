@@ -1,19 +1,20 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "@prisma/client";
+import { UserModel } from "../types/user";
 import UserRepository from "../repositories/userRepository";
 import { Request, Response } from "express";
 import {
   UserCreateRequest,
+  UserSignUpRequest,
   UserLoginRequest,
-  UserModel,
   UserRespons,
   UserUpdateRequest,
 } from "../types/user";
 import { ErrorRespons } from "../types/error";
+import { authSecret } from "../config/auth"
+import { checkRolesAllExist } from "./roleController"
 
 const userRepo = new UserRepository();
-const authSecret = process.env.AUTH_SECRET;
 const tokenExpiresDay = 3;
 
 export const getAllUser = async (req: Request, res: Response<UserRespons[]>) => {
@@ -39,13 +40,16 @@ export const createUser = async ( req: Request<never, never, UserCreateRequest>,
     password: await bcryptPassword(payload.password),
     provider: payload.provider,
   });
+  console.log(user)
   const userDTO = getUserDTO(user);
   console.log(userDTO);
   res.status(200).json(userDTO);
 };
 export const updateUser = async ( req: Request<{ id: string }, never, UserUpdateRequest>, res: Response<UserRespons | ErrorRespons>) => {
   const payload = req.body;
+  if (await isThisEmailExist(payload.email)) return res.status(400).send({ message: "此email已經存在!" }); //1.檢查email有沒有重複
   if (!(await isThisUserExist(Number(req.params.id)))) return res.status(400).send({ message: "找不到此user" });
+  if(! await checkRolesAllExist(payload.rolesEnum)) return res.status(400).send({message:"權限列表中出現不明權限"})
   payload.password = await bcryptPassword(payload.password); //加密密碼
   const user = await userRepo.update(Number(req.params.id), payload);
   const userDTO = getUserDTO(user);
@@ -56,6 +60,22 @@ export const deleteUser = async ( req: Request, res: Response<UserRespons | Erro
   const { id } = req.params;
   if (!(await isThisUserExist(Number(id)))) return res.status(400).send({ message: "沒有此User" });
   const user = await userRepo.delete(Number(id));
+  const userDTO = getUserDTO(user);
+  console.log(userDTO);
+  res.status(200).json(userDTO);
+};
+export const signUp = async ( req: Request<never, never, UserSignUpRequest>, res: Response<UserRespons | ErrorRespons>) => {
+  const payload = req.body;
+  if (await isThisEmailExist(payload.email)) return res.status(400).send({ message: "此email已經存在!" }); //1.檢查email有沒有重複
+  if (payload.confirmPassword !== payload.password) return res.status(400).send({ message: "密碼與確認密碼不同!" }); //2.檢查確認密碼
+  const user = await userRepo.add({
+    name: payload.name,
+    email: payload.email,
+    password: await bcryptPassword(payload.password),
+    provider: payload.provider,
+  });
+  //建立Roles
+
   const userDTO = getUserDTO(user);
   console.log(userDTO);
   res.status(200).json(userDTO);
@@ -71,12 +91,13 @@ export const login = async ( req: Request<never, never, UserLoginRequest>, res: 
   return res.status(200).send(userDTO);
 };
 
-function getUserDTO(user: User): UserRespons {
+function getUserDTO(user: UserModel): UserRespons {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     provider: user.provider,
+    roles:user.roles
   };
 }
 

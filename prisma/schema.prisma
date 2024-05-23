@@ -20,21 +20,12 @@ model User {
   provider String@default("email")
   vocabularys Vocabulary[]
   noteGroups NoteGroup[]
-  roles RolesOnUsers[]
+  roles Role[]
 }
 model Role {
   id Int @id@default(autoincrement())
   name String @unique
-  users RolesOnUsers[]
-}
-model RolesOnUsers{ //定義Role和User的多對多關係 
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  role Role @relation(fields: [roleId], references: [id])
-  roleId Int
-  assignedAt DateTime @default(now())
-  assignedBy String
-  @@id([userId, roleId])
+  users User[]
 }
 model NoteGroup{
   id Int @id@default(autoincrement())

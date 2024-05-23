@@ -1,3 +1,9 @@
+export enum RoleEnum{ 
+    SUPERADMIN="SUPERADMIN",
+    ADMIN="ADMIN",
+    MEMBER="MEMBER",
+    GUEST="GUEST"
+}
 export interface RoleModel{
     id:number
     name:string,

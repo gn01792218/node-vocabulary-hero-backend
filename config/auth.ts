@@ -1,0 +1,1 @@
+export const authSecret = "vocabulary_hero_auth_secret_key"

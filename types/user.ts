@@ -1,19 +1,28 @@
+import { RoleModel, RoleEnum } from "./role"
 export interface UserModel{
     id:number
     name:string,
     email:string
     provider:string,  
-    accessToken?:string
+    accessToken?:string,
+    roles:RoleModel[]
 }
 
 //請求與回應
-
 export interface UserRespons{
     id:number,
     name:string,
     email:string
+    provider:string,  //沒有填DB會自動標示為email
+    accessToken?:string //登入的時候才會拿到accessToken
+    roles:RoleModel[]
+}
+export interface UserSignUpRequest{
+    name:string,
+    email:string
+    password:string,
+    confirmPassword?:string,
     provider?:string,  //沒有填DB會自動標示為email
-    accessToken?:string
 }
 export interface UserCreateRequest{
     name:string,
@@ -21,12 +30,14 @@ export interface UserCreateRequest{
     password:string,
     confirmPassword?:string,
     provider?:string,  //沒有填DB會自動標示為email
+    rolesEnum?:RoleEnum[]
 }
 export interface UserUpdateRequest{
     name:string,
     email:string
     password:string,
-    provider?:string,
+    provider:string,
+    rolesEnum:RoleEnum[]
 }
 export interface UserSignInRequest{
     name:string,
