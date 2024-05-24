@@ -12,7 +12,7 @@ import {
 } from "../types/user";
 import { ErrorRespons } from "../types/error";
 import { authSecret } from "../config/auth"
-import { checkRolesAllExist } from "./roleController"
+import { RoleEnum } from "../types/role";
 
 const userRepo = new UserRepository();
 const tokenExpiresDay = 3;
@@ -39,6 +39,7 @@ export const createUser = async ( req: Request<never, never, UserCreateRequest>,
     email: payload.email,
     password: await bcryptPassword(payload.password),
     provider: payload.provider,
+    rolesEnum:payload.rolesEnum
   });
   console.log(user)
   const userDTO = getUserDTO(user);
@@ -49,7 +50,6 @@ export const updateUser = async ( req: Request<{ id: string }, never, UserUpdate
   const payload = req.body;
   if (await isThisEmailExist(payload.email)) return res.status(400).send({ message: "此email已經存在!" }); //1.檢查email有沒有重複
   if (!(await isThisUserExist(Number(req.params.id)))) return res.status(400).send({ message: "找不到此user" });
-  if(! await checkRolesAllExist(payload.rolesEnum)) return res.status(400).send({message:"權限列表中出現不明權限"})
   payload.password = await bcryptPassword(payload.password); //加密密碼
   const user = await userRepo.update(Number(req.params.id), payload);
   const userDTO = getUserDTO(user);
@@ -73,6 +73,7 @@ export const signUp = async ( req: Request<never, never, UserSignUpRequest>, res
     email: payload.email,
     password: await bcryptPassword(payload.password),
     provider: payload.provider,
+    rolesEnum: [RoleEnum.MEMBER] //暫時註冊時都會具備MEMBER的權限
   });
   //建立Roles
 
@@ -87,10 +88,10 @@ export const login = async ( req: Request<never, never, UserLoginRequest>, res: 
   if (!(await passwordCompare(payload.password, user.password))) return res.status(400).send({ message: "密碼不正確!" });
   const userDTO = getUserDTO(user);
   const token = createUserToken(userDTO);
-  if (token) userDTO.accessToken = token;
+  if (!token) return res.status(500).send({message:"產生token時發生錯誤"})
+  userDTO.accessToken = token;
   return res.status(200).send(userDTO);
 };
-
 function getUserDTO(user: UserModel): UserRespons {
   return {
     id: user.id,
@@ -100,7 +101,6 @@ function getUserDTO(user: UserModel): UserRespons {
     roles:user.roles
   };
 }
-
 //內部方法
 async function isThisEmailExist(email: string) {
   const user = await userRepo.getByEmail(email);

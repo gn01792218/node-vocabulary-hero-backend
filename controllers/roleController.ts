@@ -40,10 +40,10 @@ export const deleteRole = async (req:Request,res:Response<Role | ErrorRespons>)=
     res.status(200).json(user)
 }
 
-export const checkRolesAllExist = async (rolesEnum:RoleEnum[])=>{
+export const checkRolesEnumAllExist = async (rolesEnum:RoleEnum[])=>{
     const roles = await repo.getAll()
     return rolesEnum.every(roleEnum=>{
-        return roles.some(role=>role.name === roleEnum)
+        return roles.some(role=>role.name.toUpperCase() === roleEnum.toUpperCase())
     })
 }
 

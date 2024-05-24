@@ -1,18 +1,20 @@
 import { RoleEnum } from '../types/role'
-import { UserCreateDTO, UserUpdateRequest } from '../types/user'
-import { PrismaClient, Role } from '@prisma/client'
+import { UserCreateRequest, UserUpdateRequest } from '../types/user'
+import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 export default class UserRepository{
     constructor(){
     }
-    async add(payload:UserCreateDTO){
+    async add(payload:UserCreateRequest){
         const user =await prisma.user.create({
             data:{
-                ...payload,
+                name:payload.name,
+                email:payload.email,
+                password:payload.password,
+                provider:payload.provider,
                 roles:{
-                    connect:[ //往roles裡面push一個Role
-                        {name:"MEMBER"},
-                    ]
+                    //使用connect才不會新增一個role，而是尋找既有的role然後加進去; 因此若找不到會報錯
+                    connect: this.converRoleEnumIntoRole(payload.rolesEnum || [])
                 }
             },
             include:{
@@ -32,7 +34,7 @@ export default class UserRepository{
                 password:payload.password,
                 provider:payload.provider,
                 roles:{
-                    connect:this.converRoleEnumIntoRole(payload.rolesEnum)
+                    set:this.converRoleEnumIntoRole(payload.rolesEnum) //使用set來複寫
                 }
             },
             include:{
@@ -79,7 +81,7 @@ export default class UserRepository{
     }
     private converRoleEnumIntoRole(rolesEnum: RoleEnum[]) {
         return rolesEnum.map(roleEnum => {
-            return { name: roleEnum }
+            return { name: roleEnum.toUpperCase() }
         })
     }
 }

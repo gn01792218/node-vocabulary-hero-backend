@@ -28,6 +28,9 @@ export default class UserRepository{
     async getAll(){
         return await prisma.role.findMany()
     }
+    async getAllInculdeUser(){
+        return await prisma.role.findMany({include:{users:true}})
+    }
     async getById(id:number){
         const role = await prisma.role.findUnique({where:{id}})
         if(!role) return null

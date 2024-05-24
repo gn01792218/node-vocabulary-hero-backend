@@ -30,7 +30,7 @@ export interface UserCreateRequest{
     password:string,
     confirmPassword?:string,
     provider?:string,  //沒有填DB會自動標示為email
-    rolesEnum?:RoleEnum[]
+    rolesEnum:RoleEnum[]
 }
 export interface UserUpdateRequest{
     name:string,
@@ -52,12 +52,4 @@ export interface UserLoginRequest{
 export interface UserLoginRequest{
     email:string
     password:string,
-}
-
-//DTOs
-export interface UserCreateDTO{
-    name:string,
-    email:string
-    password:string,
-    provider?:string,  //沒有填DB會自動標示為email
 }
