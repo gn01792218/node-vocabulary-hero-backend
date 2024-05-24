@@ -2,9 +2,7 @@ import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from "express"
 import { ErrorRespons } from '../types/error'
 import { authSecret } from "../config/auth"
-import { UserCreateRequest, UserModel, UserUpdateRequest } from '../types/user'
-import { RoleEnum } from '../types/role'
-import { checkRolesEnumAllExist } from "../controllers/roleController"
+import { UserModel } from '../types/user'
 
 //用來為每一隻API驗證Token的function
 export const verifyToken = (req:Request,res:Response<ErrorRespons>,next:NextFunction)=>{

@@ -39,16 +39,6 @@ export interface UserUpdateRequest{
     provider:string,
     rolesEnum:RoleEnum[]
 }
-export interface UserSignInRequest{
-    name:string,
-    password:string,
-    confirmPassword:string,
-    email:string
-}
-export interface UserLoginRequest{
-    email:string
-    password:string,
-}
 export interface UserLoginRequest{
     email:string
     password:string,
