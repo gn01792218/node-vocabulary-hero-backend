@@ -11,8 +11,13 @@ export const verifyToken = (req:Request,res:Response<ErrorRespons>,next:NextFunc
     if(!token) return res.status(403).send({message:"No Access Token Provided!"})
     if(!authSecret) return res.status(403).send({message:"No Auth Secret Provided!"})
     jwt.verify(token, authSecret,(err,decoded)=>{
-    if(err) return res.status(401).send({message:"Unauthorized!"})
+    if(err) return catchJWTError(err, res) 
     req.user = decoded as UserModel
     next()
     })
+}
+
+function catchJWTError(err:jwt.VerifyErrors,res:Response<ErrorRespons>){
+    if(err instanceof jwt.TokenExpiredError) return res.status(401).send({message:"Access token was expired!"})
+    return res.status(401).send({message:"Unauthorized!"})
 }

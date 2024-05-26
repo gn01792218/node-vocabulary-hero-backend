@@ -5,6 +5,7 @@ export interface UserModel{
     email:string
     provider:string,  
     accessToken?:string,
+    refreshToken?:string
     roles:RoleModel[]
 }
 
@@ -15,6 +16,7 @@ export interface UserRespons{
     email:string
     provider:string,  //沒有填DB會自動標示為email
     accessToken?:string //登入的時候才會拿到accessToken
+    refreshToken?:string
     roles:RoleModel[]
 }
 export interface UserSignUpRequest{

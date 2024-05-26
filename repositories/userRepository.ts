@@ -69,6 +69,16 @@ export default class UserRepository{
         if(!user) return null
         return user
     }
+    async getByIdIncludeRefreshToken(id:number){
+        const user = await prisma.user.findUnique({
+            where:{id},
+            include:{
+                refreshToken:true
+            }
+        })
+        if(!user) return null
+        return user
+    }
     async getByEmail(email:string){
         const user = await prisma.user.findUnique({
             where:{email},

@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { UserModel } from "../types/user";
 import UserRepository from "../repositories/userRepository";
 import { Request, Response } from "express";
 import {
@@ -9,13 +8,15 @@ import {
   UserLoginRequest,
   UserRespons,
   UserUpdateRequest,
+  UserModel,
 } from "../types/user";
 import { ErrorRespons } from "../types/error";
-import { authSecret } from "../config/auth"
+import { accessTokenExpiration, authSecret, timeBase } from "../config/auth"
 import { RoleEnum } from "../types/role";
+import { createRefreshToken, verifyRefreshTokenExpiration, deleteRefreshTokenById, getRefreshTokenByTokenIncludeUser } from "./refreshController"
+import { RefreshTokenRequest, RefreshTokenRespons } from "../types/refreshToken";
 
 const userRepo = new UserRepository();
-const tokenExpiresDay = 3;
 
 export const getAllUser = async (req: Request, res: Response<UserRespons[]>) => {
   const users = await userRepo.getAll();
@@ -88,10 +89,38 @@ export const login = async ( req: Request<never, never, UserLoginRequest>, res: 
   if (!(await passwordCompare(payload.password, user.password))) return res.status(400).send({ message: "密碼不正確!" });
   const userDTO = getUserDTO(user);
   const token = createUserToken(userDTO);
-  if (!token) return res.status(500).send({message:"產生token時發生錯誤"})
+  const refreshToken = await createRefreshToken(userDTO)
+  if(!refreshToken) return res.status(500).send({message:'產生refreshToken時發生錯誤'})
+  if(!token) return res.status(500).send({message:"產生token時發生錯誤"})
   userDTO.accessToken = token;
+  userDTO.refreshToken = refreshToken
   return res.status(200).send(userDTO);
 };
+export const logOut = async (req:Request<{id:string}, never, never>,res:Response<string | ErrorRespons>)=>{
+  if(!req.params.id) return res.status(400).send({message:"請帶入使用者的id"})
+  const user = await userRepo.getByIdIncludeRefreshToken(Number(req.params.id))
+  if(!user) res.status(403).send({message:"找不到該使用者"})
+  if(!user?.refreshToken) return res.status(403).send({message:"此使用者並未登入，因為找不到refreshToken"})
+  await deleteRefreshTokenById(user.refreshToken.id)
+  return res.status(200).send('登出成功!')
+}
+export const refreshToken = async(req:Request<never,never, RefreshTokenRequest>,res:Response<ErrorRespons | RefreshTokenRespons>)=>{
+  if(!req.body) return res.status(403).send({message:"Refresh token is required!"})
+  const { refreshToken:requestToken } = req.body
+  const refreshToken = await getRefreshTokenByTokenIncludeUser(requestToken)
+  if(!refreshToken) return res.status(403).send({message:'can not find this refreshToken in database!'})
+  if(verifyRefreshTokenExpiration(refreshToken)) { //refresh token 過期的處理
+    //1.先移除該refreshToken
+    deleteRefreshTokenById(refreshToken.id)
+    //2.請使用者再次登入
+    return res.status(403).send({message:'Refresh token expired. Please login again'})
+  }
+  const user =await userRepo.getById(refreshToken.userId)
+  if(!user) return res.status(500).send({message:"無法透過此Refresh中提供的userId找到該user"})
+  const newAccessToken = createUserToken(user)
+  if(!newAccessToken) return res.status(500).send({message:"無法製作新的accesstoken"})
+  return res.status(200).json({accessToken:newAccessToken, refreshToken:refreshToken.token})
+}
 function getUserDTO(user: UserModel): UserRespons {
   return {
     id: user.id,
@@ -122,7 +151,7 @@ function createUserToken(user: UserRespons) {
   if (!authSecret) return console.log("請定義好auth secret 環境變數");
   const token = jwt.sign(user, authSecret, {
     algorithm: "HS256",
-    expiresIn: 86400 * tokenExpiresDay, //86400代表24小時
+    expiresIn: timeBase * accessTokenExpiration,
   });
   return token;
 }

@@ -21,11 +21,19 @@ model User {
   vocabularys Vocabulary[]
   noteGroups NoteGroup[]
   roles Role[]
+  refreshToken RefreshToken?
 }
 model Role {
   id Int @id@default(autoincrement())
   name String @unique
   users User[]
+}
+model RefreshToken{
+  id Int @id@default(autoincrement())
+  token String@unique
+  expiryDate DateTime
+  user User @relation(fields: [userId], references: [id])
+  userId Int@unique
 }
 model NoteGroup{
   id Int @id@default(autoincrement())
