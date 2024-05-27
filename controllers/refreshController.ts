@@ -20,3 +20,6 @@ export const verifyRefreshTokenExpiration = (refreshToken:RefreshToken)=>{
 export const deleteRefreshTokenById = async (id:number) =>{
     return await repo.delete(id)
 }
+export const deleteRefreshTokenByUserId = async (userId:number) =>{
+    return await repo.deleteByUserId(userId)
+}

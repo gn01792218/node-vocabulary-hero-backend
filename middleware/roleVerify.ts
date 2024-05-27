@@ -4,7 +4,7 @@ import { UserCreateRequest, UserUpdateRequest } from '../types/user'
 import { RoleEnum } from '../types/role'
 import { checkRolesEnumAllExist } from "../controllers/roleController"
 
-//身分認證
+//這裡的權限驗證來源都是JWT decode而來的
 export const isRoleListAllExist =async(req:Request<{id:string},{},UserCreateRequest | UserUpdateRequest>, res:Response<ErrorRespons>, next:NextFunction)=>{
     const payload = req.body
     if(!payload.rolesEnum?.length) return next()

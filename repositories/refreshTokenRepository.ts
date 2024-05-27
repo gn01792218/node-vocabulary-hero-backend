@@ -32,4 +32,7 @@ export default class UserRepository{
     async delete(id:number){
         return await prisma.refreshToken.delete({where:{id}})
     }
+    async deleteByUserId(userId:number){ //為了給更新、刪除使用者的時候使用
+        return await prisma.refreshToken.delete({where:{userId}})
+    }
 }

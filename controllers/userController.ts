@@ -13,7 +13,7 @@ import {
 import { ErrorRespons } from "../types/error";
 import { accessTokenExpiration, authSecret, timeBase } from "../config/auth"
 import { RoleEnum } from "../types/role";
-import { createRefreshToken, verifyRefreshTokenExpiration, deleteRefreshTokenById, getRefreshTokenByTokenIncludeUser } from "./refreshController"
+import { createRefreshToken, verifyRefreshTokenExpiration, deleteRefreshTokenById, deleteRefreshTokenByUserId, getRefreshTokenByTokenIncludeUser } from "./refreshController"
 import { RefreshTokenRequest, RefreshTokenRespons } from "../types/refreshToken";
 
 const userRepo = new UserRepository();
@@ -54,6 +54,7 @@ export const updateUser = async ( req: Request<{ id: string }, never, UserUpdate
   payload.password = await bcryptPassword(payload.password); //加密密碼
   const user = await userRepo.update(Number(req.params.id), payload);
   const userDTO = getUserDTO(user);
+  removeUserRefreshToken(userDTO.id)
   console.log(userDTO);
   res.status(200).json(userDTO);
 };
@@ -63,6 +64,7 @@ export const deleteUser = async ( req: Request, res: Response<UserRespons | Erro
   const user = await userRepo.delete(Number(id));
   const userDTO = getUserDTO(user);
   console.log(userDTO);
+  removeUserRefreshToken(userDTO.id)
   res.status(200).json(userDTO);
 };
 export const signUp = async ( req: Request<never, never, UserSignUpRequest>, res: Response<UserRespons | ErrorRespons>) => {
@@ -146,6 +148,9 @@ async function bcryptPassword(password: string) {
 }
 async function passwordCompare(inputPassword: string, comparePassword: string) {
   return await bcrypt.compare(inputPassword, comparePassword);
+}
+async function removeUserRefreshToken(userId:number){
+  await deleteRefreshTokenByUserId(userId)
 }
 function createUserToken(user: UserRespons) {
   if (!authSecret) return console.log("請定義好auth secret 環境變數");
