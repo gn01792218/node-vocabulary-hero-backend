@@ -26,6 +26,9 @@ export default class UserRepository{
     async getById(id:number){
         return await prisma.refreshToken.findUnique({where:{id}})
     }
+    async getByUserId(userId:number){
+        return await prisma.refreshToken.findUnique({where:{userId}})
+    }
     async getByTokenIncludeUser(token:string){
         return await prisma.refreshToken.findUnique({ where:{ token }, include:{ user:true } })
     }

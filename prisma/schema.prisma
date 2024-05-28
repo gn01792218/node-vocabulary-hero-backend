@@ -47,8 +47,8 @@ model Vocabulary {
   spelling String
   zh String
   pronunciation String
-  definitionMissCount Int
-  spellMissCount Int
+  definitionMissCount Int@default(0)
+  spellMissCount Int@default(0)
   examples Example[]
   user User @relation(fields: [userId], references: [id])
   userId Int@unique

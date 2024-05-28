@@ -13,7 +13,7 @@ router.put('/users/:id',[verifyToken, isSuperAdmin, isRoleListAllExist], updateU
 router.delete('/users/:id',[verifyToken, isSuperAdmin], deleteUser)
 router.post('/users/signUp', signUp)
 router.post('/users/login', login)
-router.post('/users/logOut/:id', logOut)
+router.post('/users/logOut',[verifyToken], logOut)
 router.post('/users/refreshToken', refreshToken)
 
 export default router

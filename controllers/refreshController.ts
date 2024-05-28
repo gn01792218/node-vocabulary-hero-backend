@@ -7,6 +7,9 @@ const repo = new RefreshRepository()
 export const getRefreshTokenById = async (id:number) =>{
     return await repo.getById(id)
 }
+export const getRefreshTokenByUserId = async (userId:number) =>{
+    return await repo.getByUserId(userId)
+}
 export const getRefreshTokenByTokenIncludeUser = async (token:string) =>{
     return await repo.getByTokenIncludeUser(token)
 }

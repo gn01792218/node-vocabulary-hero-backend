@@ -13,7 +13,7 @@ import {
 import { ErrorRespons } from "../types/error";
 import { accessTokenExpiration, authSecret, timeBase } from "../config/auth"
 import { RoleEnum } from "../types/role";
-import { createRefreshToken, verifyRefreshTokenExpiration, deleteRefreshTokenById, deleteRefreshTokenByUserId, getRefreshTokenByTokenIncludeUser } from "./refreshController"
+import { createRefreshToken, verifyRefreshTokenExpiration, deleteRefreshTokenById, deleteRefreshTokenByUserId, getRefreshTokenByTokenIncludeUser, getRefreshTokenById, getRefreshTokenByUserId } from "./refreshController"
 import { RefreshTokenRequest, RefreshTokenRespons } from "../types/refreshToken";
 
 const userRepo = new UserRepository();
@@ -87,24 +87,27 @@ export const signUp = async ( req: Request<never, never, UserSignUpRequest>, res
 export const login = async ( req: Request<never, never, UserLoginRequest>, res: Response<UserRespons | ErrorRespons>) => {
   const payload = req.body;
   const user = await userRepo.getByEmail(payload.email);
-  if (!user) return res.status(400).send({ message: "找不到該使用者" });
-  if (!(await passwordCompare(payload.password, user.password))) return res.status(400).send({ message: "密碼不正確!" });
+  if (!user) return res.status(400).json({ message: "找不到該使用者" });
+  if (!(await passwordCompare(payload.password, user.password))) return res.status(400).json({ message: "密碼不正確!" });
   const userDTO = getUserDTO(user);
-  const token = createUserToken(userDTO);
+  //檢查是不是重複登入
+  await checkIfUserAlreadyHaveRefreshToken(userDTO);
+  //準備製作acceccToken和refreshToken
+  const accessToken = createUserJWTToken(userDTO);
   const refreshToken = await createRefreshToken(userDTO)
-  if(!refreshToken) return res.status(500).send({message:'產生refreshToken時發生錯誤'})
-  if(!token) return res.status(500).send({message:"產生token時發生錯誤"})
-  userDTO.accessToken = token;
+  if(!refreshToken) return res.status(500).json({message:'產生refreshToken時發生錯誤'})
+  if(!accessToken) return res.status(500).json({message:"產生accessToken時發生錯誤"})
+  userDTO.accessToken = accessToken;
   userDTO.refreshToken = refreshToken
-  return res.status(200).send(userDTO);
+  return res.status(200).json(userDTO);
 };
-export const logOut = async (req:Request<{id:string}, never, never>,res:Response<string | ErrorRespons>)=>{
-  if(!req.params.id) return res.status(400).send({message:"請帶入使用者的id"})
-  const user = await userRepo.getByIdIncludeRefreshToken(Number(req.params.id))
+export const logOut = async (req:Request,res:Response<{message:string} | ErrorRespons>)=>{
+  if(!req.user?.id) return res.status(400).send({message:"無該使用者accessToken"})
+  const user = await userRepo.getByIdIncludeRefreshToken(Number(req.user.id))
   if(!user) res.status(403).send({message:"找不到該使用者"})
   if(!user?.refreshToken) return res.status(403).send({message:"此使用者並未登入，因為找不到refreshToken"})
   await deleteRefreshTokenById(user.refreshToken.id)
-  return res.status(200).send('登出成功!')
+  return res.status(200).send({message:'log out success'})
 }
 export const refreshToken = async(req:Request<never,never, RefreshTokenRequest>,res:Response<ErrorRespons | RefreshTokenRespons>)=>{
   if(!req.body) return res.status(403).send({message:"Refresh token is required!"})
@@ -119,10 +122,17 @@ export const refreshToken = async(req:Request<never,never, RefreshTokenRequest>,
   }
   const user =await userRepo.getById(refreshToken.userId)
   if(!user) return res.status(500).send({message:"無法透過此Refresh中提供的userId找到該user"})
-  const newAccessToken = createUserToken(user)
+  const newAccessToken = createUserJWTToken(user)
   if(!newAccessToken) return res.status(500).send({message:"無法製作新的accesstoken"})
   return res.status(200).json({accessToken:newAccessToken, refreshToken:refreshToken.token})
 }
+async function checkIfUserAlreadyHaveRefreshToken(userDTO: UserRespons) {
+  const userRefreshToken = await getRefreshTokenByUserId(userDTO.id);
+  if (userRefreshToken) { //假如已經存在refreshId就要清除這個refreshToken
+    deleteRefreshTokenByUserId(userDTO.id);
+  }
+}
+
 function getUserDTO(user: UserModel): UserRespons {
   return {
     id: user.id,
@@ -152,7 +162,7 @@ async function passwordCompare(inputPassword: string, comparePassword: string) {
 async function removeUserRefreshToken(userId:number){
   await deleteRefreshTokenByUserId(userId)
 }
-function createUserToken(user: UserRespons) {
+function createUserJWTToken(user: UserRespons) {
   if (!authSecret) return console.log("請定義好auth secret 環境變數");
   const token = jwt.sign(user, authSecret, {
     algorithm: "HS256",
