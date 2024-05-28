@@ -32,25 +32,24 @@ model RefreshToken{
   id Int @id@default(autoincrement())
   token String@unique
   expiryDate DateTime
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int@unique
 }
 model NoteGroup{
   id Int @id@default(autoincrement())
   title String
   vocabularys Vocabulary[]
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int@unique
 }
 model Vocabulary {
   id Int @id@default(autoincrement())
   spelling String
-  zh String
   pronunciation String
   definitionMissCount Int@default(0)
   spellMissCount Int@default(0)
   examples Example[]
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int@unique
   noteGroup NoteGroup[]
   noteGroupIds Int[] 
@@ -59,13 +58,13 @@ model Example {
   id Int @id@default(autoincrement())
   definition String
   sentence Sentence[]
-  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id]) 
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade) 
   vocabularyId Int@unique
 }
 model Sentence {
   id Int @id@default(autoincrement())
   en String
-  example Example @relation(fields: [exampleId], references: [id]) 
+  example Example @relation(fields: [exampleId], references: [id], onDelete: Cascade) 
   exampleId Int@unique
 }
 

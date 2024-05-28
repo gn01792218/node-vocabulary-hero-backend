@@ -12,6 +12,11 @@ export const isRoleListAllExist =async(req:Request<{id:string},{},UserCreateRequ
     if(! await alllExist) return res.status(400).send({message:'權限列表中，出現了不存在的權限'})
     next()
 }
+export const isMember =async (req:Request, res:Response<ErrorRespons>, next:NextFunction)=>{
+    const role = req.user?.roles.find(role => role.name === RoleEnum.MEMBER)
+    if(!role) return res.status(403).send({message:`Require ${RoleEnum.MEMBER} Role`})
+    next()
+}
 export const isAdmin =async (req:Request, res:Response<ErrorRespons>, next:NextFunction)=>{
     const role = req.user?.roles.find(role => role.name === RoleEnum.ADMIN)
     if(!role) return res.status(403).send({message:`Require ${RoleEnum.ADMIN} Role`})

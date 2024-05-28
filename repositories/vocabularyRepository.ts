@@ -4,19 +4,18 @@ const prisma = new PrismaClient()
 export default class UserRepository{
     constructor(){
     }
-    async createByUser(payload:VocabularyCreateRequest){
+    async createByUser(userId:number ,payload:VocabularyCreateRequest){
         const vocabulary =await prisma.vocabulary.create({
             data:{
                 spelling:payload.spelling,
-                zh:payload.zh,
-                pronunciation:payload.prounciation,
-                userId:payload.userId
+                pronunciation:payload.pronunciation,
+                userId:userId
             }
         })
         return vocabulary
     }
     async update(id:number, payload:VocabularyUpdateRequest){
-        const vocabulary = await prisma.role.update({
+        const vocabulary = await prisma.vocabulary.update({
             where:{
                 id
             },
@@ -25,10 +24,14 @@ export default class UserRepository{
         return vocabulary
     }
     async delete(id:number){
-        const deleteVocabulary = await prisma.vocabulary.delete({
-            where:{ id }
-        })
-        return deleteVocabulary
+        try{
+            const deleteVocabulary = await prisma.vocabulary.delete({
+                where:{ id }
+            })
+            return deleteVocabulary
+        }catch(error){
+            return console.log(error)
+        }
     }
     async getAll(){
         return await prisma.vocabulary.findMany()

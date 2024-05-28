@@ -1,28 +1,20 @@
 export interface VocabularyCreateRequest{
     spelling:string,
-    zh:string,
-    prounciation:string,
-    userId:number
+    pronunciation:string,
 }
 export interface VocabularyCreateRespon{
     id:number
     spelling:string,
-    zh:string,
-    prounciation:string,
-    userId:number
+    pronunciation:string,
 }
 export interface VocabularyUpdateRequest{
     spelling:string,
-    zh:string,
-    prounciation:string,
-    userId:number
+    pronunciation:string,
 }
 export interface VocabularyUpdateRespon{
     id:number
     spelling:string,
-    zh:string,
-    prounciation:string,
-    userId:number
+    pronunciation:string,
 }
 export interface VocabularyDeleteRequest{
     vocabularyId:number
@@ -30,7 +22,5 @@ export interface VocabularyDeleteRequest{
 export interface VocabularyDeleteRespon{
     id:number
     spelling:string,
-    zh:string,
-    prounciation:string,
-    userId:number
+    pronunciation:string,
 }
