@@ -1,7 +1,7 @@
-import { Vocabulary } from '@prisma/client'
+import { Example, Vocabulary } from '@prisma/client'
 import VocabularyRepository from '../repositories/vocabularyRepository'
 import { Request, Response } from 'express'
-import { VocabularyCreateRequest, VocabularyUpdateRequest, VocabularyUpdateRespon } from '../types/vocabulary'
+import { VocabularyCreateRequest, VocabularyUpdateRequest } from '../types/vocabulary'
 import { ErrorRespons } from '../types/error'
 const repo = new VocabularyRepository()
 
@@ -17,6 +17,12 @@ export const getAllVocabularysIncludeUser = async (req:Request,res:Response<Voca
 }
 export const getVocabulary = async (req:Request<{id:string}>,res:Response<Vocabulary | ErrorRespons>)=>{
     const vocabulary = await repo.getById(Number(req.params.id))
+    console.log(vocabulary)
+    if(!vocabulary) return res.status(400).json({message:'查無此vocabulary'})
+    res.status(200).json(vocabulary)
+}
+export const getVocabularyIncludeExamplesAndStences = async (req:Request<{id:string}>,res:Response<Vocabulary | ErrorRespons>)=>{
+    const vocabulary = await repo.getByIdIncludeExampleAndStences(Number(req.params.id))
     console.log(vocabulary)
     if(!vocabulary) return res.status(400).json({message:'查無此vocabulary'})
     res.status(200).json(vocabulary)

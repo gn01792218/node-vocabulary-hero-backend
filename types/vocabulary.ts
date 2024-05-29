@@ -11,11 +11,6 @@ export interface VocabularyUpdateRequest{
     spelling:string,
     pronunciation:string,
 }
-export interface VocabularyUpdateRespon{
-    id:number
-    spelling:string,
-    pronunciation:string,
-}
 export interface VocabularyDeleteRequest{
     vocabularyId:number
 }

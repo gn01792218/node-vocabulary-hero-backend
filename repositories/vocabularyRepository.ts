@@ -44,4 +44,9 @@ export default class VocabularyRepository{
         if(!vocabulary) return null
         return vocabulary
     }
+    async getByIdIncludeExampleAndStences(id:number){
+        const vocabulary = await prisma.vocabulary.findUnique({where:{id},include:{examples:{include:{sentences:true}}}})
+        if(!vocabulary) return null
+        return vocabulary
+    }
 }
