@@ -5,7 +5,7 @@ import { UserRespons } from '../types/user'
 
 const prisma = new PrismaClient()
 
-export default class UserRepository{
+export default class RefreshTokenRepository{
     constructor(){
     }
     async create(payload:UserRespons){

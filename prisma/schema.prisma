@@ -33,14 +33,14 @@ model RefreshToken{
   token String@unique
   expiryDate DateTime
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int@unique
+  userId Int@unique //代表一個使用者只能有一個Token
 }
 model NoteGroup{
   id Int @id@default(autoincrement())
   title String
   vocabularys Vocabulary[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int@unique
+  userId Int
 }
 model Vocabulary {
   id Int @id@default(autoincrement())
@@ -49,22 +49,26 @@ model Vocabulary {
   definitionMissCount Int@default(0)
   spellMissCount Int@default(0)
   examples Example[]
+  sentences Sentence[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int@unique
+  userId Int
   noteGroup NoteGroup[]
   noteGroupIds Int[] 
 }
 model Example {
   id Int @id@default(autoincrement())
   definition String
-  sentence Sentence[]
+  sentences Sentence[]
   vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade) 
-  vocabularyId Int@unique
+  vocabularyId Int
 }
 model Sentence {
   id Int @id@default(autoincrement())
   en String
+  zh String
   example Example @relation(fields: [exampleId], references: [id], onDelete: Cascade) 
-  exampleId Int@unique
+  exampleId Int
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade) 
+  vocabularyId Int
 }
 

@@ -1,7 +1,7 @@
 import { RoleCreateDTO, RoleUpdateRequest } from '../types/role'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
-export default class UserRepository{
+export default class RoleRepository{
     constructor(){
     }
     async add(payload:RoleCreateDTO){

@@ -1,7 +1,7 @@
 import { VocabularyCreateRequest, VocabularyUpdateRequest } from '../types/vocabulary'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
-export default class UserRepository{
+export default class VocabularyRepository{
     constructor(){
     }
     async createByUser(userId:number ,payload:VocabularyCreateRequest){

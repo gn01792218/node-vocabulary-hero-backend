@@ -24,8 +24,16 @@ export const getAllUser = async (req: Request, res: Response<UserRespons[]>) => 
   console.log(usersDTO);
   res.status(200).json(usersDTO);
 };
-export const getUser = async ( req: Request<{ id: string }>, res: Response<UserRespons | ErrorRespons>) => {
+export const getUserById = async ( req: Request<{ id: string }>, res: Response<UserRespons | ErrorRespons>) => {
   const user = await userRepo.getById(Number(req.params.id));
+  if (!user) return res.status(400).json({ message: "查無此User" });
+  const userDTO = getUserDTO(user);
+  console.log(userDTO);
+  res.status(200).json(userDTO);
+};
+export const getUser = async ( req: Request, res: Response<UserRespons | ErrorRespons>) => {
+  console.log('進getUser')
+  const user = await userRepo.getById(Number(req.user?.id));
   if (!user) return res.status(400).json({ message: "查無此User" });
   const userDTO = getUserDTO(user);
   console.log(userDTO);
