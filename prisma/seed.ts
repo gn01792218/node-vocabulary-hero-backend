@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client'
+import { RoleEnum } from '../types/role'
 
 const prisma = new PrismaClient()
 
@@ -6,7 +7,14 @@ const userData: Prisma.UserCreateInput[] = [
   {
     name: 'gn01792218',
     email: 'gn01792218@hotmail.com',
-    password:''
+    password:'',
+    roles:{
+      create:[
+        {name:RoleEnum.MEMBER},
+        {name:RoleEnum.ADMIN},
+        {name:RoleEnum.SUPERADMIN}
+      ]
+    }
   },
 ]
 
