@@ -11,7 +11,7 @@ const port = 1222
 app.use(cors())
 app.use(express.json()) //讓express可以解析request.body
 
-app.use(`${process.env.API_BASE_URL}`,route)
+app.use('/api',route)
 
 app.get('/',(req,res)=>{
     res.send('<h1>Hellow Word</h1>')
