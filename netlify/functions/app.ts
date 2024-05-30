@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import route from '../routes'
+import route from '../../routes'
 import serverless from 'serverless-http'
 
 dotenv.config()
