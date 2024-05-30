@@ -62,7 +62,7 @@ export const updateUser = async ( req: Request<{ id: string }, never, UserUpdate
   payload.password = await bcryptPassword(payload.password); //加密密碼
   const user = await userRepo.update(Number(req.params.id), payload);
   const userDTO = getUserDTO(user);
-  removeUserRefreshToken(userDTO.id)
+  removeUserRefreshToken(userDTO.id) //當後臺更新使用者時，就刪除該使用者的refreshToken，前端要讓使用者再次登入才行
   console.log(userDTO);
   res.status(200).json(userDTO);
 };
@@ -168,6 +168,8 @@ async function passwordCompare(inputPassword: string, comparePassword: string) {
   return await bcrypt.compare(inputPassword, comparePassword);
 }
 async function removeUserRefreshToken(userId:number){
+  const existR = await getRefreshTokenById(userId)
+  if(!existR) return 
   await deleteRefreshTokenByUserId(userId)
 }
 function createUserJWTToken(user: UserRespons) {

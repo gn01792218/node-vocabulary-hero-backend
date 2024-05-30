@@ -6,16 +6,16 @@ import { getAllUser, getUserById, getUser, createUser, updateUser,  deleteUser, 
 
 const router = Router()
 
-router.get('/users',[verifyToken, isMember], getAllUser)
-router.get('/users/userInfo',[verifyToken, isMember], getUser)
-router.get('/users/:id',[verifyToken, isMember], getUserById)
-router.put('/users/:id',[verifyToken, isSuperAdmin, isRoleListAllExist], updateUser)
-router.post('/users',[verifyToken, isSuperAdmin, isRoleListAllExist], createUser) //要限定只有Admin以上才可以建立
-router.delete('/users/:id',[verifyToken, isSuperAdmin], deleteUser)
-router.post('/users/signUp', signUp)
-router.post('/users/login', login)
-router.post('/users/logOut',[verifyToken], logOut)
-router.post('/users/refreshToken', refreshToken)
+router.get('/',[verifyToken, isMember], getAllUser)
+router.get('/userInfo',[verifyToken, isMember], getUser)
+router.get('/:id',[verifyToken, isMember], getUserById)
+router.put('/:id',[verifyToken, isSuperAdmin, isRoleListAllExist], updateUser)
+router.post('/',[verifyToken, isSuperAdmin, isRoleListAllExist], createUser) //要限定只有Admin以上才可以建立
+router.delete('/:id',[verifyToken, isSuperAdmin], deleteUser)
+router.post('/signUp', signUp)
+router.post('/login', login)
+router.post('/logOut',[verifyToken], logOut)
+router.post('/refreshToken', refreshToken)
 
 export default router
 

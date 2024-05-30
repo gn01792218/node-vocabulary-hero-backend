@@ -6,12 +6,12 @@ import { createSentence, deleteSentence, getAllSentences, getSentents, getSenten
 
 const router = Router()
 
-router.get('/sentences',[verifyToken], getAllSentences)
-router.get('/sentences/:id',[verifyToken, isMember], getSentents)
-router.get('/sentences/:id/example',[verifyToken, isMember], getSententsIncludeExample)
-router.post('/sentences/:exampleId/:vocabularyId',[verifyToken, isMember], createSentence) 
-router.put('/sentences/:id',[verifyToken, isMember], updateSentence)
-router.delete('/sentences/:id',[verifyToken, isMember], deleteSentence)
+router.get('/',[verifyToken], getAllSentences)
+router.get('/:id',[verifyToken, isMember], getSentents)
+router.get('/:id/example',[verifyToken, isMember], getSententsIncludeExample)
+router.post('/:exampleId/:vocabularyId',[verifyToken, isMember], createSentence) 
+router.put('/:id',[verifyToken, isMember], updateSentence)
+router.delete('/:id',[verifyToken, isMember], deleteSentence)
 
 export default router
 

@@ -6,11 +6,11 @@ import { getAllRoles, getRole, createRole, updateRole,  deleteRole} from '../con
 
 const router = Router()
 
-router.get('/roles',[verifyToken, isAdmin], getAllRoles)
-router.get('/roles/:id',[verifyToken, isAdmin], getRole)
-router.post('/roles',[verifyToken, isSuperAdmin], createRole) 
-router.put('/roles/:id',[verifyToken, isSuperAdmin], updateRole)
-router.delete('/roles/:id',[verifyToken, isSuperAdmin], deleteRole)
+router.get('/',[verifyToken, isAdmin], getAllRoles)
+router.get('/:id',[verifyToken, isAdmin], getRole)
+router.post('/',[verifyToken, isSuperAdmin], createRole) 
+router.put('/:id',[verifyToken, isSuperAdmin], updateRole)
+router.delete('/:id',[verifyToken, isSuperAdmin], deleteRole)
 
 export default router
 

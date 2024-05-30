@@ -14,13 +14,13 @@ import {
 
 const router = Router()
 
-router.get('/vocabularys',[verifyToken], getAllVocabularys)
-router.get('/vocabularys/user',[verifyToken, isMember], getAllVocabularysIncludeUser)
-router.get('/vocabularys/:id',[verifyToken, isMember], getVocabulary)
-router.get('/vocabularys/:id/examples/stences',[verifyToken, isMember], getVocabularyIncludeExamplesAndStences)
-router.post('/vocabularys/user/:userId',[verifyToken, isMember], createVocabularyByUser) 
-router.put('/vocabularys/:id',[verifyToken, isMember], updateVocabulary)
-router.delete('/vocabularys/:id',[verifyToken, isMember], deleteVocabulary)
+router.get('/',[verifyToken], getAllVocabularys)
+router.get('/user',[verifyToken, isMember], getAllVocabularysIncludeUser)
+router.get('/:id',[verifyToken, isMember], getVocabulary)
+router.get('/:id/examples/stences',[verifyToken, isMember], getVocabularyIncludeExamplesAndStences)
+router.post('/user/:userId',[verifyToken, isMember], createVocabularyByUser) 
+router.put('/:id',[verifyToken, isMember], updateVocabulary)
+router.delete('/:id',[verifyToken, isMember], deleteVocabulary)
 
 export default router
 
