@@ -199,6 +199,7 @@ async function bcryptPassword(password: string) {
   return await bcrypt.hash(password, 12);
 }
 async function passwordCompare(inputPassword: string, comparePassword: string) {
+  if(!inputPassword.trim()) return false //google登入者的密碼將會是空的，所以這裡要擋掉不給過
   return await bcrypt.compare(inputPassword, comparePassword);
 }
 async function removeUserRefreshToken(userId:number){
