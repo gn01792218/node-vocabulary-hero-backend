@@ -19,7 +19,7 @@ model User {
   password String
   provider String@default("email")
   vocabularys Vocabulary[]
-  noteGroups NoteGroup[]
+  notes Note[]
   roles Role[]
   refreshToken RefreshToken?
 }
@@ -35,7 +35,7 @@ model RefreshToken{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int@unique //代表一個使用者只能有一個Token
 }
-model NoteGroup{
+model Note{
   id Int @id@default(autoincrement())
   title String
   vocabularys Vocabulary[]
@@ -52,8 +52,8 @@ model Vocabulary {
   sentences Sentence[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
-  noteGroup NoteGroup[]
-  noteGroupIds Int[] 
+  notes Note[]
+  notesId Int[]
 }
 model Example {
   id Int @id@default(autoincrement())
