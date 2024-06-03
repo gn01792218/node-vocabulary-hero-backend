@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { verifyToken  } from "../middleware/authJWT"
 import { isAdmin, isSuperAdmin, isRoleListAllExist, isMember  } from "../middleware/roleVerify"
 
-import { getAllUser, getUserById, getUser, createUser, updateUser,  deleteUser, login, logOut, signUp, refreshToken} from '../controllers/userController'
+import { getAllUser, getUserById, getUser, createUser, updateUser,  deleteUser, login, loginWithGooleByCredential, logOut, signUp, refreshToken} from '../controllers/userController'
 
 const router = Router()
 
@@ -14,6 +14,7 @@ router.post('/',[verifyToken, isSuperAdmin, isRoleListAllExist], createUser) //è
 router.delete('/:id',[verifyToken, isSuperAdmin], deleteUser)
 router.post('/signUp', signUp)
 router.post('/login', login)
+router.post('/login/google/credential', loginWithGooleByCredential)
 router.post('/logOut',[verifyToken], logOut)
 router.post('/refreshToken', refreshToken)
 

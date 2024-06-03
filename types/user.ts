@@ -45,3 +45,9 @@ export interface UserLoginRequest{
     email:string
     password:string,
 }
+export interface UserLoginWithGoogleTokenRequest{
+    access_token:string
+}
+export interface UserLoginWithGoogleCredentialRequest{
+    credential:string
+}

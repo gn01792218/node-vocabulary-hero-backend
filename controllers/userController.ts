@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from 'google-auth-library'
 import UserRepository from "../repositories/userRepository";
 import { Request, Response } from "express";
 import {
@@ -9,6 +10,7 @@ import {
   UserRespons,
   UserUpdateRequest,
   UserModel,
+  UserLoginWithGoogleCredentialRequest,
 } from "../types/user";
 import { ErrorRespons } from "../types/error";
 import { accessTokenExpiration, authSecret, timeBase } from "../config/auth"
@@ -79,16 +81,7 @@ export const signUp = async ( req: Request<never, never, UserSignUpRequest>, res
   const payload = req.body;
   if (await isThisEmailExist(payload.email)) return res.status(400).send({ message: "此email已經存在!" }); //1.檢查email有沒有重複
   if (payload.confirmPassword !== payload.password) return res.status(400).send({ message: "密碼與確認密碼不同!" }); //2.檢查確認密碼
-  const user = await userRepo.add({
-    name: payload.name,
-    email: payload.email,
-    password: await bcryptPassword(payload.password),
-    provider: payload.provider,
-    rolesEnum: [RoleEnum.MEMBER] //暫時註冊時都會具備MEMBER的權限
-  });
-  //建立Roles
-
-  const userDTO = getUserDTO(user);
+  const userDTO = await createUserAndConverToUserDTO(payload);
   console.log(userDTO);
   res.status(200).json(userDTO);
 };
@@ -98,6 +91,34 @@ export const login = async ( req: Request<never, never, UserLoginRequest>, res: 
   if (!user) return res.status(400).json({ message: "找不到該使用者" });
   if (!(await passwordCompare(payload.password, user.password))) return res.status(400).json({ message: "密碼不正確!" });
   const userDTO = getUserDTO(user);
+  //檢查是不是重複登入
+  await checkIfUserAlreadyHaveRefreshToken(userDTO);
+  //準備製作acceccToken和refreshToken
+  const accessToken = createUserJWTToken(userDTO);
+  const refreshToken = await createRefreshToken(userDTO)
+  if(!refreshToken) return res.status(500).json({message:'產生refreshToken時發生錯誤'})
+  if(!accessToken) return res.status(500).json({message:"產生accessToken時發生錯誤"})
+  userDTO.accessToken = accessToken;
+  userDTO.refreshToken = refreshToken
+  return res.status(200).json(userDTO);
+};
+export const loginWithGooleByCredential = async ( req: Request<never, never, UserLoginWithGoogleCredentialRequest>, res: Response<UserRespons | ErrorRespons>) => {
+  const payload = req.body;
+  //1.利用前端傳的access token 取得使用者的資訊
+  const userInfo = await getGoogleUserInfoWithCredentialFlow(payload.credential)
+  if(!userInfo?.email) return res.status(403).json({message:'驗證google credential時出錯了'})
+  const user = await userRepo.getByEmail(userInfo?.email)
+  let userDTO:UserRespons
+  if(!user) {
+    userDTO = await createUserAndConverToUserDTO({
+      name:userInfo.name || '',
+      email:userInfo.email,
+      password: await bcryptPassword(''),
+      provider:'google',
+    })
+  }else{
+    userDTO = getUserDTO(user)
+  }
   //檢查是不是重複登入
   await checkIfUserAlreadyHaveRefreshToken(userDTO);
   //準備製作acceccToken和refreshToken
@@ -134,6 +155,19 @@ export const refreshToken = async(req:Request<never,never, RefreshTokenRequest>,
   if(!newAccessToken) return res.status(500).send({message:"無法製作新的accesstoken"})
   return res.status(200).json({accessToken:newAccessToken, refreshToken:refreshToken.token})
 }
+async function createUserAndConverToUserDTO(payload: UserSignUpRequest) {
+  const user = await userRepo.add({
+    name: payload.name,
+    email: payload.email,
+    password: await bcryptPassword(payload.password),
+    provider: payload.provider,
+    rolesEnum: [RoleEnum.MEMBER] //暫時註冊時都會具備MEMBER的權限
+  });
+  //建立Roles
+  const userDTO = getUserDTO(user);
+  return userDTO;
+}
+
 async function checkIfUserAlreadyHaveRefreshToken(userDTO: UserRespons) {
   const userRefreshToken = await getRefreshTokenByUserId(userDTO.id);
   if (userRefreshToken) { //假如已經存在refreshId就要清除這個refreshToken
@@ -179,4 +213,21 @@ function createUserJWTToken(user: UserRespons) {
     expiresIn: timeBase * accessTokenExpiration,
   });
   return token;
+}
+async function getGoogleUserInfoWithTokenFlow(access_token:string){
+  const oauthClient = new OAuth2Client()
+  oauthClient.setCredentials({access_token})
+
+  const { data:userInfo } = await oauthClient.request({url:'https://www.googleapis.com/oauth2/v3/userinfo'})
+  oauthClient.revokeCredentials()
+
+  return userInfo
+}
+async function getGoogleUserInfoWithCredentialFlow(credential:string){
+  const oauthClient = new OAuth2Client()
+
+  const ticket = await oauthClient.verifyIdToken({idToken:credential})
+  const userInfo = ticket.getPayload()
+
+  return userInfo
 }
