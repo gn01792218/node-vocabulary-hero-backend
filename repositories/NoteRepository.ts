@@ -8,6 +8,7 @@ export default class NoteGroupRepository{
         const note =await prisma.note.create({
             data:{
                 title:payload.title,
+                description:payload.description,
                 userId
             }
         })
