@@ -1,4 +1,4 @@
-import { VocabularyCreateRequest, VocabularyUpdateRequest } from '../types/vocabulary'
+import { VocabularyCreateRequest, VocabularyUpdateNotesRequest, VocabularyUpdateRequest } from '../types/vocabulary'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 export default class VocabularyRepository{
@@ -38,6 +38,12 @@ export default class VocabularyRepository{
     }
     async getAllIncludeUser(){
         return await prisma.vocabulary.findMany({include:{user:true}})
+    }
+    async getAllIncludeExamplesAndSentences(){
+        return await prisma.vocabulary.findMany({include:{user:true, examples:{include:{sentences:true}}}})
+    }
+    async getAllIncludeAllRelationShip(){
+        return await prisma.vocabulary.findMany({include:{user:true, examples:{include:{sentences:true}}, notes:true}})
     }
     async getById(id:number){
         const vocabulary = await prisma.vocabulary.findUnique({where:{id}})

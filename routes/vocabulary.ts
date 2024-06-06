@@ -7,6 +7,8 @@ import {
     deleteVocabulary, 
     getAllVocabularys, 
     getAllVocabularysIncludeUser, 
+    getAllVocabularysIncludeExampleAndStences,
+    getAllVocabularysAllRelationShip,
     getVocabulary, 
     getVocabularyIncludeExamplesAndStences,
     updateVocabulary 
@@ -16,6 +18,8 @@ const router = Router()
 
 router.get('/',[verifyToken], getAllVocabularys)
 router.get('/user',[verifyToken, isMember], getAllVocabularysIncludeUser)
+router.get('/examples',[verifyToken, isMember], getAllVocabularysIncludeExampleAndStences)
+router.get('/all', [verifyToken, isMember], getAllVocabularysAllRelationShip)
 router.get('/:id',[verifyToken, isMember], getVocabulary)
 router.get('/:id/examples/stences',[verifyToken, isMember], getVocabularyIncludeExamplesAndStences)
 router.post('/user/:userId',[verifyToken, isMember], createVocabularyByUser) 

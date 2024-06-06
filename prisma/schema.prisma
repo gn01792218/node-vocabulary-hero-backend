@@ -54,7 +54,6 @@ model Vocabulary {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
   notes Note[]
-  notesId Int[]
 }
 model Example {
   id Int @id@default(autoincrement())

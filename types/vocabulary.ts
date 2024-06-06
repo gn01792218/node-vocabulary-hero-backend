@@ -11,6 +11,9 @@ export interface VocabularyUpdateRequest{
     spelling:string,
     pronunciation:string,
 }
+export interface VocabularyUpdateNotesRequest{
+    notesId:number[]
+}
 export interface VocabularyDeleteRequest{
     vocabularyId:number
 }

@@ -4,5 +4,8 @@ export interface CreateNoteRequest{
 }
 export interface UpdateNoteRequest{
     title:string
-    description:string
+    description:string,
+}
+export interface UpdateNoteVocabularysRequest{
+    vocabularys_id:number[]
 }

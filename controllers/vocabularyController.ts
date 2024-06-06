@@ -15,6 +15,16 @@ export const getAllVocabularysIncludeUser = async (req:Request,res:Response<Voca
     console.log(roles)
     res.status(200).json(roles)
 }
+export const getAllVocabularysIncludeExampleAndStences = async (req:Request,res:Response<Vocabulary[]>)=>{
+    const roles = await repo.getAllIncludeExamplesAndSentences()
+    console.log(roles)
+    res.status(200).json(roles)
+}
+export const getAllVocabularysAllRelationShip = async (req:Request,res:Response<Vocabulary[]>)=>{
+    const roles = await repo.getAllIncludeAllRelationShip()
+    console.log(roles)
+    res.status(200).json(roles)
+}
 export const getVocabulary = async (req:Request<{id:string}>,res:Response<Vocabulary | ErrorRespons>)=>{
     const vocabulary = await repo.getById(Number(req.params.id))
     console.log(vocabulary)
