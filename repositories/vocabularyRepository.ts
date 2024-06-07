@@ -1,4 +1,4 @@
-import { VocabularyCreateRequest, VocabularyUpdateNotesRequest, VocabularyUpdateRequest } from '../types/vocabulary'
+import { VocabularyCreateFromNoteRequest, VocabularyCreateRequest, VocabularyUpdateNotesRequest, VocabularyUpdateRequest } from '../types/vocabulary'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 export default class VocabularyRepository{
@@ -10,6 +10,23 @@ export default class VocabularyRepository{
                 spelling:payload.spelling,
                 pronunciation:payload.pronunciation,
                 userId:userId
+            }
+        })
+        return vocabulary
+    }
+    async createByUserFromNote(userId:number ,payload:VocabularyCreateFromNoteRequest){
+        const vocabulary =await prisma.vocabulary.create({
+            data:{
+                spelling:payload.spelling,
+                pronunciation:payload.pronunciation,
+                userId:userId,
+                notes:{
+                    connect:[
+                        {
+                            id:payload.noteId
+                        }
+                    ]
+                }
             }
         })
         return vocabulary

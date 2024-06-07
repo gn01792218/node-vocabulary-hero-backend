@@ -4,6 +4,7 @@ import { isMember } from "../middleware/roleVerify"
 
 import { 
     createVocabularyByUser, 
+    createVocabularyByUserFromNote,
     deleteVocabulary, 
     getAllVocabularys, 
     getAllVocabularysIncludeUser, 
@@ -22,7 +23,8 @@ router.get('/examples',[verifyToken, isMember], getAllVocabularysIncludeExampleA
 router.get('/all', [verifyToken, isMember], getAllVocabularysAllRelationShip)
 router.get('/:id',[verifyToken, isMember], getVocabulary)
 router.get('/:id/examples/stences',[verifyToken, isMember], getVocabularyIncludeExamplesAndStences)
-router.post('/user/:userId',[verifyToken, isMember], createVocabularyByUser) 
+router.post('/user',[verifyToken, isMember], createVocabularyByUser) 
+router.post('/note',[verifyToken, isMember], createVocabularyByUserFromNote)
 router.put('/:id',[verifyToken, isMember], updateVocabulary)
 router.delete('/:id',[verifyToken, isMember], deleteVocabulary)
 

@@ -74,4 +74,11 @@ export default class NoteGroupRepository {
     if (!note) return null;
     return note;
   }
+  async getById(id: number) {
+    const note = await prisma.note.findUnique({
+      where: { id },
+    });
+    if (!note) return null;
+    return note;
+  }
 }

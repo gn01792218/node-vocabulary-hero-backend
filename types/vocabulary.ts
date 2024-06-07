@@ -2,6 +2,11 @@ export interface VocabularyCreateRequest{
     spelling:string,
     pronunciation:string,
 }
+export interface VocabularyCreateFromNoteRequest{
+    spelling:string,
+    pronunciation:string,
+    noteId:number
+}
 export interface VocabularyCreateRespon{
     id:number
     spelling:string,
