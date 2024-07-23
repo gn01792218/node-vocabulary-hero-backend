@@ -4,6 +4,7 @@ import roleRoute from './role'
 import vocabulary from './vocabulary'
 import exampleRoute from './example'
 import sentenceRoute from './sentence'
+import aiRoute from './ai'
 import noteRoute from './note'
 
 const router = Router()
@@ -14,6 +15,7 @@ router.use('/vocabularys',vocabulary)
 router.use('/examples',exampleRoute)
 router.use('/sentences',sentenceRoute)
 router.use('/notes', noteRoute)
+router.use('/ai', aiRoute)
 router.use('/',(req,res)=>res.json({message:'歡迎光臨vocabulary hero api'}))
 
 export default router
