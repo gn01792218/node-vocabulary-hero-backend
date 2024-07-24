@@ -12,6 +12,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// User
 model User {
   id Int @id@default(autoincrement())
   name String
@@ -21,6 +22,8 @@ model User {
   vocabularys Vocabulary[]
   notes Note[]
   roles Role[]
+  test_papers TestPaper[]
+  test Test[]
   refreshToken RefreshToken?
 }
 model Role {
@@ -35,6 +38,7 @@ model RefreshToken{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int@unique //代表一個使用者只能有一個Token
 }
+// Note
 model Note{
   id Int @id@default(autoincrement())
   title String
@@ -43,6 +47,7 @@ model Note{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 }
+// Vocabulary
 model Vocabulary {
   id Int @id@default(autoincrement())
   spelling String
@@ -71,4 +76,84 @@ model Sentence {
   vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade) 
   vocabularyId Int
 }
-
+// TestPaper
+model TestPaper{
+  id Int @id@default(autoincrement())
+  title String
+  description String
+  MCQs MCQQuestion[]
+  test_options  TestOptions? //1對1關係必須要加上?號
+  tests Test[]
+  user User @relation(fields: [user_id], references: [id]) //不會隨作者消失而消失
+  user_id Int
+}
+model TestOptions{
+  id Int @id@default(autoincrement())
+  MCQ_answer_time_limit Int
+  strict_mode Boolean
+  test_paper   TestPaper @relation(fields: [test_id], references: [id], onDelete: Cascade)
+  test_id Int  @unique 
+}
+model MCQQuestion{
+  id Int @id@default(autoincrement())
+  question String
+  options MCQQuestOption[]
+  tags String[]
+  test_papers TestPaper[]
+}
+model MCQQuestOption{
+  id Int @id@default(autoincrement())
+  content String
+  is_answer Boolean
+  MCQ_question  MCQQuestion @relation(fields: [MCQ_question_id], references: [id], onDelete: Cascade) 
+  MCQ_question_id Int 
+}
+// Test
+model Test{
+  id Int @id@default(autoincrement())
+  test_date DateTime //建立Test時必備項目
+  test_end_date DateTime?
+  answer_sheet AnswerSheet?
+  total_question_number Int?
+  correct_count Int?
+  unsure_count Int?
+  MCQ_question_record MCQQuestionRecord?
+  test_paper TestPaper @relation(fields: [test_paper_id], references: [id]) //test_paper可能會依據資料庫的更新而有所改變
+  test_paper_id Int 
+  user User @relation(fields: [user_id], references: [id]) //不會隨作者消失而消失
+  user_id Int
+}
+model AnswerSheet{
+  id Int @id@default(autoincrement())
+  userId Int
+  testId Int
+  answers Answer[]
+  test Test @relation(fields: [test_id], references: [id],onDelete: Cascade)
+  test_id Int @unique
+}
+model Answer{
+  id Int @id@default(autoincrement())
+  MCQ_question_id Int
+  select_question_options_ids Int[] 
+  is_unsure_answer Boolean@default(false)
+  answer_sheet  AnswerSheet @relation(fields: [answer_sheet_id], references: [id], onDelete: Cascade) 
+  answer_sheet_id Int 
+}
+model MCQQuestionRecord{
+  id Int @id@default(autoincrement())
+  questing String
+  solution String
+  tags String[]
+  is_unsure_answer Boolean @default(false)
+  is_correct Boolean@default(false)
+  options MCQQuestionOptionRecord[]
+  test Test @relation(fields: [test_id], references: [id], onDelete: Cascade)
+  test_id Int @unique
+}
+model MCQQuestionOptionRecord{
+  id Int @id@default(autoincrement())
+  content String
+  is_answer Boolean@default(false)
+  MCQ_question_record MCQQuestionRecord @relation(fields: [MCQ_question_record_id], references: [id], onDelete: Cascade)
+  MCQ_question_record_id Int @unique
+}
