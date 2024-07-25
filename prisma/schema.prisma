@@ -99,6 +99,7 @@ model MCQQuestion{
   question String
   options MCQQuestOption[]
   tags String[]
+  share Boolean@default(true) //是否讓別人也可以看到
   test_papers TestPaper[]
 }
 model MCQQuestOption{
