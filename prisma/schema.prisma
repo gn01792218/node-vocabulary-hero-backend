@@ -97,9 +97,11 @@ model TestOptions{
 model MCQQuestion{
   id Int @id@default(autoincrement())
   question String
-  options MCQQuestOption[]
   tags String[]
+  solutions String[]
   share Boolean@default(true) //是否讓別人也可以看到
+  user_id Int
+  options MCQQuestOption[]
   test_papers TestPaper[]
 }
 model MCQQuestOption{

@@ -2,7 +2,6 @@
 export interface TestPaperCreateRequest{
     title:string,
     description:string,
-    user_id:number
 }
 export interface TestPaperUpdateRequest{
     title:string,

@@ -4,33 +4,36 @@ const prisma = new PrismaClient()
 export default class testPaperRepository{
     constructor(){
     }
-    async add(payload:TestPaperCreateRequest){  
-        const testPaper =await prisma.testPaper.create({
-            data:payload    
+    async add(user_id:number,payload:TestPaperCreateRequest){  
+        const data =await prisma.testPaper.create({
+            data:{
+                ...payload,
+                user_id
+            }  
         })
-        return testPaper
+        return data
     }
     async update(id:number, payload:TestPaperUpdateRequest){
-        const testPaper = await prisma.testPaper.update({
+        const data = await prisma.testPaper.update({
             where:{
                 id
             },
             data:payload
         })
-        return testPaper
+        return data
     }
     async delete(id:number){
-        const deletetestPaper = await prisma.testPaper.delete({
+        const deleteData = await prisma.testPaper.delete({
             where:{ id }
         })
-        return deletetestPaper
+        return deleteData
     }
     async getAll(){
         return await prisma.testPaper.findMany()
     }
     async getById(id:number){
-        const testPaper = await prisma.testPaper.findUnique({where:{id}})
-        if(!testPaper) return null
-        return testPaper
+        const data = await prisma.testPaper.findUnique({where:{id}})
+        if(!data) return null
+        return data
     }
 }
