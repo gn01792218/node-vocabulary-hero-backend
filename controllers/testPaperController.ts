@@ -19,10 +19,7 @@ export const getById = async (req:Request<{id:string}>,res:Response<TestPaper | 
 export const create = async (req:Request<never, never, TestPaperCreateRequest>,res:Response<TestPaper | ErrorRespons>)=>{
     if(!req.user?.id) return res.status(400).json({message:'需要使用者id'})
     const payload = req.body
-    const res_data = await repo.add(Number(req.user.id),{
-       title:payload.title,
-       description:payload.description,
-    })
+    const res_data = await repo.add(Number(req.user.id),{...payload})
     console.log(res_data)
     res.status(200).json(res_data)
 }

@@ -81,6 +81,7 @@ model TestPaper{
   id Int @id@default(autoincrement())
   title String
   description String
+  share Boolean@default(true)
   MCQs MCQQuestion[]
   test_options  TestOptions? //1對1關係必須要加上?號
   tests Test[]

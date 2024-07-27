@@ -2,8 +2,10 @@
 export interface TestPaperCreateRequest{
     title:string,
     description:string,
+    share:boolean
 }
 export interface TestPaperUpdateRequest{
     title:string,
-    description:string
+    description:string,
+    share:boolean
 }
