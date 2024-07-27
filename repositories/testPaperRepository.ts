@@ -29,10 +29,10 @@ export default class testPaperRepository{
         return deleteData
     }
     async getAll(){
-        return await prisma.testPaper.findMany()
+        return await prisma.testPaper.findMany({include:{MCQs:{include:{options:true}}}})
     }
     async getById(id:number){
-        const data = await prisma.testPaper.findUnique({where:{id}})
+        const data = await prisma.testPaper.findUnique({where:{id},include:{MCQs:{include:{options:true}}}})
         if(!data) return null
         return data
     }
