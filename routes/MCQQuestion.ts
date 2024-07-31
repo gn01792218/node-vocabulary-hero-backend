@@ -2,11 +2,12 @@ import { Router } from 'express'
 import { verifyToken  } from "../middleware/authJWT"
 import { isMember } from "../middleware/roleVerify"
 
-import { getAll, getById, create, update,  deleteById} from '../controllers/MCQQuestionController'
+import { getAll, getUserAll, getById, create, update,  deleteById} from '../controllers/MCQQuestionController'
 
 const router = Router()
 
 router.get('/',[verifyToken, isMember], getAll)
+router.get('/userAll',[verifyToken, isMember], getUserAll)
 router.get('/:id',[verifyToken, isMember], getById)
 router.post('/',[verifyToken, isMember], create) 
 router.put('/:id',[verifyToken, isMember], update)

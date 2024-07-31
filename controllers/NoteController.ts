@@ -33,7 +33,7 @@ export const updateNote = async (req:Request<{id:string}, never, UpdateNoteReque
 }
 export const updateNoteVocabulary = async (req:Request<{id:string}, never, UpdateNoteVocabularysRequest>,res:Response<Note | ErrorRespons>)=>{
     const payload = req.body
-    payload.vocabularys_id = await getExistVocabularysId(payload.vocabularys_id)
+    payload.ids = await getExistIds(payload.ids)
     const note = await repo.updateVocabularys(Number(req.params.id) ,payload)
     console.log(note)
     res.status(200).json(note)
@@ -45,14 +45,14 @@ export const deleteNote = async (req:Request<{id:string}>,res:Response<Note | Er
     res.status(200).json(note)
 }
 
-async function getExistVocabularysId(idList:number[]){
-    const newList = await Promise.all(idList.map(checkVocabularyExist))
+async function getExistIds(idList:number[]){
+    const newList = await Promise.all(idList.map(checkIdExist))
     return newList.filter((id) : id is number =>id !== null)
     //註解
     //(parameter): parameter is Type。在這裡，id is number 告訴 TypeScript 編譯器，當回調函數返回 true 時，id 的類型應該被認為是 number。
     //告訴 TypeScript 編譯器，過濾後的陣列只包含 number 類型的元素，從而避免了在後續代碼中對 id 進行不必要的空值檢查。
 }
-async function checkVocabularyExist(vocabularyId:number){
+async function checkIdExist(vocabularyId:number){
     const vocabulary = await vocabularyRepo.getById(vocabularyId)
     return vocabulary? vocabularyId : null
 }

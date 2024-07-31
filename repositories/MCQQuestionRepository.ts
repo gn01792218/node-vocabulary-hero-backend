@@ -27,6 +27,7 @@ export default class testPaperRepository {
       },
       include: {
         options: true,
+        test_papers:true
       },
     });
     return data;
@@ -39,6 +40,7 @@ export default class testPaperRepository {
       data: payload,
       include: {
         options: true,
+        test_papers:true
       },
     });
     return data;
@@ -50,12 +52,15 @@ export default class testPaperRepository {
     return deleteData;
   }
   async getAll() {
-    return await prisma.mCQQuestion.findMany({ include: { options: true } });
+    return await prisma.mCQQuestion.findMany({ include: { options: true, test_papers:true } });
+  }
+  async getUserAll(user_id:number) {
+    return await prisma.mCQQuestion.findMany({ where:{user_id},include: { options: true, test_papers:true } });
   }
   async getById(id: number) {
     const data = await prisma.mCQQuestion.findUnique({
       where: { id },
-      include: { options: true },
+      include: { options: true, test_papers:true },
     });
     if (!data) return null;
     return data;

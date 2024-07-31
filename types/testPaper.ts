@@ -9,3 +9,6 @@ export interface TestPaperUpdateRequest{
     description:string,
     share:boolean
 }
+export interface UpdateTestPaperMCQsRequest{
+    ids:number[]
+}

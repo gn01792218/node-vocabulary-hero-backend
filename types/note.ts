@@ -7,5 +7,5 @@ export interface UpdateNoteRequest{
     description:string,
 }
 export interface UpdateNoteVocabularysRequest{
-    vocabularys_id:number[]
+    ids:number[]
 }

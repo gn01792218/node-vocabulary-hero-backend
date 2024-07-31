@@ -36,7 +36,7 @@ export default class NoteGroupRepository {
       },
       data: {
         vocabularys: {
-          set: payload.vocabularys_id.map((id) => ({ id })),
+          set: payload.ids.map((id) => ({ id })),
         },
       },
       include: {

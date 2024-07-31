@@ -10,6 +10,12 @@ export const getAll = async (req:Request,res:Response<MCQQuestion[]>)=>{
     console.log(res_data)
     res.status(200).json(res_data)
 }
+export const getUserAll = async (req:Request,res:Response<MCQQuestion[] | ErrorRespons>)=>{
+    if(!req.user?.id) return  res.status(400).json({message:'需要使用者id'})
+    const res_data = await repo.getUserAll(Number(req.user.id))
+    console.log(res_data)
+    res.status(200).json(res_data)
+}
 export const getById = async (req:Request<{id:string}>,res:Response<MCQQuestion | ErrorRespons>)=>{
     const res_data = await repo.getById(Number(req.params.id))
     console.log(res_data)
